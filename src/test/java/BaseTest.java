@@ -1,13 +1,14 @@
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+
 import pages.HomePage;
+import pages.PopupPage;
+
 
 import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
 
@@ -15,22 +16,35 @@ import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
 @AllArgsConstructor
 public class BaseTest {
 
-
     public WebDriver driver;
-    public static final String HIGHCHARTS_URL= "https://www.highcharts.com/demo/combo-timeline/";
+    public static final String HIGHCHARTS_URL = "https://www.highcharts.com/demo/combo-timeline/";
+    public static final String filePath = "src/main/resources/expectingTestDataForTests.csv";
+
+    HomePage homePage = new HomePage();
 
 
-    @Before
+    @BeforeEach
     public void testSetUp() {
         chromedriver().setup();
         driver = new ChromeDriver();
         driver.manage().window().maximize();
+        driver.get(HIGHCHARTS_URL);
     }
 
 
-    @After
+    @AfterEach
     public void tearDown() {
-        driver.close();
+         driver.close();
     }
 
+    public WebDriver getDriver() {
+        return driver;
+    }
+    public HomePage getHomePage() {
+        return new HomePage(getDriver());
+    }
+
+    public PopupPage getPopupPage() {
+        return new PopupPage(getDriver());
+    }
 }
