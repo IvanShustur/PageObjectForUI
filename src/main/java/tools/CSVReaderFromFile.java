@@ -27,7 +27,7 @@ public class CSVReaderFromFile {
                         .withCSVParser(csvParser)
                         .build()) {
              r = reader.readAll();
-            r.forEach(x -> System.out.println(Arrays.toString(x)));
+           // r.forEach(x -> System.out.println(Arrays.toString(x)));
         }
         return r;
     }

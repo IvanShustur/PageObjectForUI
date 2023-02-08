@@ -1,19 +1,19 @@
 import com.opencsv.exceptions.CsvException;
-
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.idealized.Javascript;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import tools.CSVReaderFromFile;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.Locale;
 
 
 public class UITests extends BaseTest {
@@ -28,53 +28,70 @@ public class UITests extends BaseTest {
     }
 
 
-    @DisplayName("Parsing csv File")
+    @DisplayName("Verify data from tooltips and CSV file")
     @Test
-    public void parsingCSV() throws IOException, CsvException {
-        List<String []> dataFromCSVFile= CSVReaderFromFile.parseCSVFile(new File(filePath));
-    }
-
-    @DisplayName("Using class Action")
-    @Test
-    public void verifyStephane() throws InterruptedException {
+    public void verifyTextFromTooltip() throws InterruptedException, IOException, CsvException{
         getPopupPage().clickOnUseNecessaryCookiesOnlyButton();
-        Thread.sleep(2000);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[span = 'Area charts']")));
+        getHomePage().disableGoogleGraph();
+        getHomePage().disableRevenueGraph();
         Actions actions = new Actions(driver);
-        actions.moveToElement(driver.findElement(By.xpath("//*[span = 'Area charts']"))).
-                perform();
-        Thread.sleep(5000);
-    }
+        List<String> textFromTooltip = new ArrayList<>();
 
-    @DisplayName("Using Offset")
-    @Test
-    public void verifyStephaneWithAction() throws InterruptedException {
-        getPopupPage().clickOnUseNecessaryCookiesOnlyButton();
-        Thread.sleep(2000);
-
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-//        wait.until(ExpectedConditions.visibilityOfAllElements((WebElement) By.xpath("//*[@class='highcharts-markers highcharts-series-2 highcharts-area-series highcharts-color-2 highcharts-tracker']/*")));
-        for (WebElement element: getHomePage().listOfEmployee){
-            element.click();
+        for (WebElement element : getHomePage().listOfEmployee) {
+            actions.moveToElement(element).perform();
+            textFromTooltip.add(getHomePage().tooltip.getText());
         }
+        List<String[]> textFromCSVFile = CSVReaderFromFile
+                .parseCSVFile(new File("src/main/resources/expectingTestDataForTests.csv"));
 
-
-        Thread.sleep(5000);
+        SoftAssertions softAssertions = new SoftAssertions();
+        for (int i = 2; i < textFromTooltip.size(); i++) {
+            String receivedResult = textFromTooltip.get(i).replace(",", "")
+                    .replace(" ", "")
+                    .replace("employees", "")
+                    .toLowerCase(Locale.ROOT);
+            String expectedResult = Arrays.toString(textFromCSVFile.get(i)).
+                    replace(",", "")
+                    .replace(" ", "")
+                    .replace("[", "")
+                    .replace("]", "")
+                    .toLowerCase(Locale.ROOT);
+            softAssertions.assertThat(receivedResult).as("Received text is not match the expected from the CSV file").isEqualTo(expectedResult);
+        }
+        softAssertions.assertAll();
     }
 
-    @DisplayName("Using JS executor")
+    @DisplayName("Verify data from tooltips and CSV file with String Join")
     @Test
-    public void verifyStephaneWithJS() throws InterruptedException {
+    public void verifyTextFromTooltipUsingStringJoin() throws InterruptedException, IOException, CsvException {
         getPopupPage().clickOnUseNecessaryCookiesOnlyButton();
-        Thread.sleep(2000);
+        getHomePage().disableGoogleGraph();
+        getHomePage().disableRevenueGraph();
+        Actions actions = new Actions(driver);
+        List<String> textFromTooltip = new ArrayList<>();
+        for (WebElement element : getHomePage().listOfEmployee) {
+           actions.moveToElement(element).perform();
+            textFromTooltip.add(getHomePage().tooltip.getText());
+        }
+        List<String[]> textFromCSVFile = CSVReaderFromFile
+                .parseCSVFile(new File("src/main/resources/expectingTestDataForTests.csv"));
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class = 'highcharts-a11y-proxy-button highcharts-no-tooltip']")));
+        SoftAssertions softAssertions = new SoftAssertions();
+        for (int i = 2; i < textFromTooltip.size(); i++) {
+            String receivedResult = textFromTooltip.get(i)
+                    .replace(",", "")
+                    .replace(" ", "")
+                    .replace("employees", "")
+                    .toLowerCase(Locale.ROOT);
+            String expectedResult = String.join("",textFromCSVFile.get(i))
+                    .replace(",", "")
+                    .replace(" ", "")
+                    .toLowerCase(Locale.ROOT);
 
+            softAssertions.assertThat(receivedResult).as("Received text is not match the expected from the CSV file").isEqualTo(expectedResult);
 
-        Thread.sleep(5000);
+        }
+        softAssertions.assertAll();
+
     }
-
-
 }

@@ -28,17 +28,21 @@ public class HomePage extends BasePage{
 
 
     
-    @FindBy (xpath = "//*[@class='highcharts-markers highcharts-series-2 highcharts-area-series highcharts-color-2 highcharts-tracker']/*")
+   //@FindBy (xpath = "//*[@class='highcharts-markers highcharts-series-2 highcharts-area-series highcharts-color-2 highcharts-tracker']/*")
+    @FindBy (xpath = "//*[@aria-label='Highsoft employees, series 3 of 7 with 14 data points. Y axis, Employees.']/*")
     public List<WebElement> listOfEmployee;
 
-    @FindBy (xpath = "//*[@class='highcharts-label highcharts-tooltip highcharts-color-2']")
-    private WebElement stephane;
+    @FindBy (xpath = "//*[contains(text(), 'View in full screen')]")
+    public WebElement viewInFullScreenButton;
 
-    @FindBy (xpath = "//*[@class='highcharts-halo highcharts-color-2']")
-    private WebElement pickStephane;
+    @FindBy (xpath = "//*[@class='highcharts-a11y-proxy-button'][@aria-label='Show Google search for highcharts']")
+    private WebElement disableGoogleGraphButton;
 
-    @FindBy (xpath = "//*[@class='btn btn-primary mr-1 btn-small horisontal-menu-item text-uppercase']")
-    private WebElement buttonToTry;
+    @FindBy (xpath = "//*[@class='highcharts-a11y-proxy-button'][@aria-label='Show Revenue']")
+    private WebElement disableRevenueGraphButton;
+
+    @FindBy (xpath ="//*[@style='color: rgb(51, 51, 51); font-size: 12px; fill: rgb(51, 51, 51);']")
+    public WebElement tooltip;
 
 
     public void clickOnChartContextMenuButton() {
@@ -53,10 +57,19 @@ public class HomePage extends BasePage{
         downloadCSVButton.click();
     }
 
-
-
-    public String getTextFromTooltip() {
-        return stephane.getText();
+    public void disableGoogleGraph(){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.visibilityOf(disableGoogleGraphButton));
+        disableGoogleGraphButton.click();
     }
 
+    public void disableRevenueGraph(){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.visibilityOf(disableRevenueGraphButton));
+        disableRevenueGraphButton.click();
+    }
+
+    public void openInFullScreen(){
+      viewInFullScreenButton.click();
+    }
 }

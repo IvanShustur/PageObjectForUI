@@ -9,7 +9,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import pages.HomePage;
 import pages.PopupPage;
 
-
 import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
 
 @NoArgsConstructor
@@ -19,8 +18,6 @@ public class BaseTest {
     public WebDriver driver;
     public static final String HIGHCHARTS_URL = "https://www.highcharts.com/demo/combo-timeline/";
     public static final String filePath = "src/main/resources/expectingTestDataForTests.csv";
-
-    HomePage homePage = new HomePage();
 
 
     @BeforeEach
